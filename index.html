@@ -162,7 +162,7 @@
                 <div>
                   <div class="big" id="ov-2-big" style="display:none">0</div>
                   <h2 id="ov-2-t">Defensa antibacterias</h2>
-                  <p id="ov-2-p">Las bacterias van directo al diente. Haz clic para disparar pasta y detenerlas.</p>
+                  <p id="ov-2-p">Olvidaron cepillarse los dientes antes de dormir y las atacan. Haz clic para disparar las microparticulas de Colgate Total Interdental para protegerlo.</p>
                   <button id="ov-2-b">Empezar a disparar</button>
                   <p class="hint" id="ov-2-h">Clic o toque para apuntar</p>
                 </div>
@@ -251,6 +251,8 @@ var CANDIDATES={
   armor:['Sarraldoconarmadura.png','sarraldoconarmadura.png'],
   free:['sarraldosinarmadura.png','Sarraldosinarmadura.png'],
   dientino:['dientino.png','Dientino.png'],
+  scared:['dienteasustado.png','Dienteasustado.png'],
+  paste:['pasta.png','Pasta.png'],
   brush:['cepillo.png','Cepillo.png','cepillo-colgate.png']
 };
 var NUDGE={x:0,y:0,scale:1};
@@ -811,7 +813,7 @@ var G1=(function(){
       cv.addEventListener('pointerdown',function(e){ e.preventDefault(); var l=local(cv,e); px=ppx=l.x; py=ppy=l.y; inside=true; },{passive:false});
       cv.addEventListener('pointerleave',function(){ inside=false; scrub(0); });
       ov.show({ title:'Libera a Sarraldo',
-        copy:'Frota rápido sobre la armadura antes de que llegue. Solo el gesto de cepillar la rompe.',
+        copy:'Sarraldo está atrapado en una armadura de sarro por falta de cepillado. Ayuda a liberarlo cepillando.',
         btn:'Empezar a cepillar', hint:'Ratón o dedo sobre el diente',
         action:function(){ initAudio(); if(AC&&AC.state==='suspended') AC.resume(); start(); } });
     },
@@ -820,13 +822,14 @@ var G1=(function(){
       ov.show({ title:'En pausa', copy:'Volviste al juego 1. ¿Seguimos cepillando?', btn:'Continuar', hint:'', action:function(){ running=true; ov.hide(); } }); } }
   };
 })();
-
 /* =========================================================
-   JUEGO 2 — Defensa antibacterias
+   JUEGO 2 — Defensa Nocturna
    ========================================================= */
 var G2=(function(){
   var cv=document.getElementById('c2'), ctx=null, ov=null, tile=null;
   var germs=[],shots=[],splats=[],pops=[];
+  var pack=null, shield=0;
+  var SHIELD_TIME=5;
   var score=0,wave=1,hp=3,running=false,spawnT=0,left=0,cool=0,shake=0,flash=0;
   var TX=W/2, TY=H*0.66, TH=176;
 
@@ -836,15 +839,16 @@ var G2=(function(){
     document.getElementById('h2-bar').style.width=Math.min(100,(1-left/waveTotal())*100)+'%';
     livesEl('h2-lives',hp,3);
   }
-  function waveTotal(){ return 5+wave*3; }
+  function waveTotal(){ return 5+wave*4; }
   function spawn(){
     var side=Math.floor(Math.random()*3), x,y;
     if(side===0){ x=-40; y=60+Math.random()*(H*0.55); }
     else if(side===1){ x=W+40; y=60+Math.random()*(H*0.55); }
     else { x=80+Math.random()*(W-160); y=-40; }
-    var tough=Math.random()<Math.min(.45,wave*0.07);
-    germs.push({ x:x,y:y, r:tough?26:20, hp:tough?3:1, maxhp:tough?3:1,
-      sp:34+wave*5+Math.random()*22, wob:Math.random()*6.28, rot:Math.random()*6.28,
+    var tough=Math.random()<Math.min(.60,wave*0.09);
+    var hpv=tough?(2+Math.floor(wave/3)):1;
+    germs.push({ x:x,y:y, r:tough?26:20, hp:hpv, maxhp:hpv,
+      sp:38+wave*8+Math.random()*26, wob:Math.random()*6.28, rot:Math.random()*6.28,
       col:tough?C.germ2:(Math.random()>.5?C.germ1:C.germ3), legs:5+Math.floor(Math.random()*4) });
   }
   function shoot(x,y){
@@ -853,6 +857,44 @@ var G2=(function(){
     var mx=TX, my=TY-TH*0.2, a=Math.atan2(y-my,x-mx);
     shots.push({ x:mx,y:my, vx:Math.cos(a)*640, vy:Math.sin(a)*640, r:9, life:1.4 });
     tone(520,'sine');
+  }
+  function spawnPack(){
+    pack={ x:110+Math.random()*(W-220), y:90+Math.random()*(H*0.42),
+           life:8, bob:Math.random()*6.28 };
+    tone(1040,'sine');
+  }
+  function grab(){
+    shield=SHIELD_TIME; pack=null;
+    pops.push({x:TX,y:TY-TH*0.52,life:1.3,txt:'¡ESCUDO 5s!'});
+    tone(980,'sine');
+  }
+  function drawPack(){
+    if(!pack) return;
+    var blink=(pack.life<2 && Math.floor(pack.life*6)%2===0);
+    ctx.save();
+    ctx.globalAlpha=blink?.35:1;
+    ctx.translate(pack.x,pack.y+Math.sin(pack.bob)*6);
+    var pr=36+Math.sin(pack.bob*2)*3;
+    ctx.beginPath(); ctx.arc(0,0,pr,0,6.284);
+    ctx.fillStyle='rgba(23,166,123,.15)'; ctx.fill();
+    ctx.lineWidth=3; ctx.setLineDash([7,7]);
+    ctx.strokeStyle=C.green; ctx.stroke(); ctx.setLineDash([]);
+    var im=IMG.paste;
+    if(im){
+      var sw=im.naturalWidth||im.width, sh=im.naturalHeight||im.height;
+      var sc=60/Math.max(sw,sh), dw=sw*sc, dh=sh*sc;
+      ctx.drawImage(im,-dw/2,-dh/2,dw,dh);
+    }else{
+      ctx.fillStyle='#fff';
+      ctx.beginPath();
+      if(ctx.roundRect) ctx.roundRect(-11,-27,22,54,7); else ctx.rect(-11,-27,22,54);
+      ctx.fill(); ctx.lineWidth=3; ctx.strokeStyle=C.redDk; ctx.stroke();
+      ctx.fillStyle=C.red;
+      ctx.beginPath();
+      if(ctx.roundRect) ctx.roundRect(-11,-27,22,15,6); else ctx.rect(-11,-27,22,15);
+      ctx.fill();
+    }
+    ctx.restore();
   }
   function drawGerm(g){
     ctx.save(); ctx.translate(g.x,g.y); ctx.rotate(Math.sin(g.wob)*.2);
@@ -886,24 +928,43 @@ var G2=(function(){
     ctx.beginPath(); ctx.ellipse(TX,TY+TH*0.44,TH*0.32,TH*0.06,0,0,6.284); ctx.fill();
     ctx.globalAlpha=1;
     if(tile) ctx.drawImage(tile,TX-TH/2,TY-TH/2,TH,TH);
-    ctx.strokeStyle='rgba(23,166,123,'+(0.18+0.1*Math.sin(performance.now()/420))+')';
-    ctx.lineWidth=3; ctx.setLineDash([9,10]);
-    ctx.beginPath(); ctx.arc(TX,TY,TH*0.56,0,6.284); ctx.stroke(); ctx.setLineDash([]);
+    if(shield>0){
+      ctx.beginPath(); ctx.arc(TX,TY,TH*0.56,0,6.284);
+      ctx.fillStyle='rgba(23,166,123,.13)'; ctx.fill();
+      ctx.lineWidth=5; ctx.strokeStyle='rgba(23,166,123,.9)'; ctx.stroke();
+      ctx.lineWidth=5; ctx.strokeStyle=C.greenDk;
+      ctx.beginPath();
+      ctx.arc(TX,TY,TH*0.64,-Math.PI/2,-Math.PI/2+6.284*(shield/SHIELD_TIME));
+      ctx.stroke();
+    }else{
+      ctx.strokeStyle='rgba(23,166,123,'+(0.18+0.1*Math.sin(performance.now()/420))+')';
+      ctx.lineWidth=3; ctx.setLineDash([9,10]);
+      ctx.beginPath(); ctx.arc(TX,TY,TH*0.56,0,6.284); ctx.stroke(); ctx.setLineDash([]);
+    }
     ctx.restore();
   }
   function update(dt){
     cool=Math.max(0,cool-dt);
+    if(shield>0) shield=Math.max(0,shield-dt);
+    if(pack){ pack.bob+=dt*3; pack.life-=dt; if(pack.life<=0) pack=null; }
     if(running){
       spawnT-=dt;
-      if(spawnT<=0&&left>0){ spawn(); left--; spawnT=Math.max(.32,1.15-wave*.06); hud(); }
+      if(spawnT<=0&&left>0){ spawn(); left--; spawnT=Math.max(.22,1.10-wave*.075); hud(); }
       for(var i=germs.length-1;i>=0;i--){
         var g=germs[i];
         g.wob+=dt*3; g.rot+=dt*.7;
         var a=Math.atan2(TY-g.y,TX-g.x);
         g.x+=Math.cos(a)*g.sp*dt; g.y+=Math.sin(a)*g.sp*dt;
-        if(Math.hypot(TX-g.x,TY-g.y)<TH*0.36){
-          germs.splice(i,1); hp--; flash=1; shake=15; tone(140,'sawtooth'); hud();
-          if(hp<=0){ over(); return; }
+        if(Math.hypot(TX-g.x,TY-g.y)<(shield>0?TH*0.58:TH*0.36)){
+          if(shield>0){
+            germs.splice(i,1); score+=15; hud(); tone(660,'sine');
+            pops.push({x:g.x,y:g.y,life:.7,txt:'+15'});
+            for(var q9=0;q9<9;q9++) splats.push({x:g.x,y:g.y,
+              vx:(Math.random()-.5)*220,vy:(Math.random()-.5)*220-40,r:3+Math.random()*5,life:.45});
+          }else{
+            germs.splice(i,1); hp--; flash=1; shake=15; tone(140,'sawtooth'); hud();
+            if(hp<=0){ over(); return; }
+          }
         }
       }
       for(var s=shots.length-1;s>=0;s--){
@@ -916,7 +977,7 @@ var G2=(function(){
             for(var p=0;p<7;p++) splats.push({x:sh.x,y:sh.y,vx:(Math.random()-.5)*180,vy:(Math.random()-.5)*180-40,r:3+Math.random()*5,life:.45});
             shots.splice(s,1);
             if(gg.hp<=0){
-              var val=gg.maxhp>1?25:10;
+              var val=10+(gg.maxhp-1)*12;
               score+=val; hud(); tone(700,'sine');
               pops.push({x:gg.x,y:gg.y,life:.8,txt:'+'+val});
               germs.splice(j,1);
@@ -928,6 +989,7 @@ var G2=(function(){
       if(left===0&&germs.length===0){
         wave++; score+=40; left=waveTotal(); spawnT=.8; hud();
         pops.push({x:W/2,y:H*0.28,life:1.2,txt:'OLEADA '+wave}); tone(880,'sine');
+        if(wave%2===1) spawnPack();
       }
     }
     for(var k=splats.length-1;k>=0;k--){ var q=splats[k]; q.life-=dt; q.vy+=300*dt; q.x+=q.vx*dt; q.y+=q.vy*dt; if(q.life<=0) splats.splice(k,1); }
@@ -941,6 +1003,7 @@ var G2=(function(){
     if(shake>0) ctx.translate((Math.random()-.5)*shake,(Math.random()-.5)*shake);
     drawHero();
     germs.forEach(drawGerm);
+    drawPack();
     for(var s=0;s<shots.length;s++){
       var sh=shots[s];
       ctx.save(); ctx.translate(sh.x,sh.y);
@@ -968,7 +1031,7 @@ var G2=(function(){
   }
   function start(){
     germs=[];shots=[];splats=[];pops=[];
-    score=0;wave=1;hp=3;left=waveTotal();spawnT=.6;cool=0;
+    score=0;wave=1;hp=3;left=waveTotal();spawnT=.6;cool=0;pack=null;shield=0;
     hud(); running=true; ov.hide();
   }
   function over(){
@@ -980,10 +1043,14 @@ var G2=(function(){
   }
   return {
     init:function(){
-      ctx=setup(cv); ov=Overlay(2); tile=makeTile(IMG.free,256,null); hud();
-      cv.addEventListener('pointerdown',function(e){ e.preventDefault(); var l=local(cv,e); shoot(l.x,l.y); },{passive:false});
+  ctx=setup(cv); ov=Overlay(2); tile=makeTile(IMG.scared||IMG.free,256,null); hud();
+      cv.addEventListener('pointerdown',function(e){
+        e.preventDefault(); var l=local(cv,e);
+        if(pack && Math.hypot(pack.x-l.x,pack.y-l.y)<44){ grab(); return; }
+        shoot(l.x,l.y);
+      },{passive:false});
       ov.show({ title:'Defensa antibacterias',
-        copy:'Las bacterias van directo al diente. Haz clic para disparar pasta y detenerlas antes de que lo toquen.',
+        copy:'Las bacterias van directo al diente. Haz clic para disparar pasta y detenerlas. Cada dos oleadas aparece un tubo de Colgate Total: recógelo para activar 5 segundos de escudo.',
         btn:'Empezar a disparar', hint:'Clic o toque para apuntar',
         action:function(){ initAudio(); if(AC&&AC.state==='suspended') AC.resume(); start(); } });
     },
@@ -1189,7 +1256,7 @@ var G3=(function(){
       });
       cv.addEventListener('pointercancel',function(){ sactive=false; });
       ov.show({ title:'Dientino al camión',
-        copy:'Cruza la calle esquivando el tráfico y la comida chatarra hasta llegar al camión rojo de Colgate.',
+        copy:'Ayuda a Dientino a llegar a su cita en con el dentista en el camión rojo de Colgate.',
         btn:'Empezar a cruzar', hint:'Flechas del teclado o swipe',
         action:function(){ initAudio(); if(AC&&AC.state==='suspended') AC.resume(); start(); } });
     },
