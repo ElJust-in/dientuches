@@ -1108,7 +1108,6 @@ var G3=(function(){
     ctx.globalAlpha=1;
     var sz=player.h*1.5;
     if(tile) ctx.drawImage(tile,player.x-sz/2,player.y-hop-sz/2,sz,sz);
-    drawCap(ctx,player.x,player.y-hop-sz*0.29,sz*0.44);
     ctx.restore();
   }
   function update(dt){
@@ -1179,7 +1178,7 @@ var G3=(function(){
   var sx=0,sy=0,sactive=false;
   return {
     init:function(){
-      ctx=setup(cv); ov=Overlay(3); tile=makeTile(IMG.free,256,null);
+      ctx=setup(cv); ov=Overlay(3); tile=makeTile(IMG.dientino||IMG.free,320,null);
       buildLanes(); resetPlayer(); hud();
       cv.addEventListener('pointerdown',function(e){ e.preventDefault(); var l=local(cv,e); sx=l.x; sy=l.y; sactive=true; },{passive:false});
       cv.addEventListener('pointerup',function(e){
