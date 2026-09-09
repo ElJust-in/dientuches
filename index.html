@@ -1,0 +1,1270 @@
+<html lang="es"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dientuches — 3 juegos Colgate</title>
+<style>
+  :root{
+    --red:#E1261C; --red-dk:#A8140E; --red-deep:#6E0D08;
+    --ink:#2A2320; --ink-2:#7A6E63; --ink-3:#A99C90;
+    --cream:#FFF7EA; --cream-2:#F7EDDC; --line-w:#E4D8C6;
+    --ochre:#DCC286; --ochre-dk:#8A6A33; --ochre-lt:#F6E9CB;
+    --green:#17A67B; --green-dk:#0E7A5A;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;background:var(--cream);color:var(--ink);-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1060px;margin:0 auto;padding:0 20px}
+
+  .top{display:flex;align-items:center;justify-content:space-between;padding:18px 0;gap:16px;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:10px}
+  .brand-mark{width:34px;height:34px;border-radius:50%;background:var(--red);display:grid;place-items:center}
+  .brand-mark span{color:#fff;font-weight:800;font-size:18px;line-height:1}
+  .brand-name{font-weight:800;letter-spacing:-.5px;font-size:20px;color:var(--red)}
+  .totals{display:flex;gap:22px}
+  .t-n{font-size:22px;font-weight:800;letter-spacing:-1px}
+  .t-l{font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:var(--ink-3);margin-top:1px}
+
+  .slider{position:relative;background:radial-gradient(130% 130% at 12% 0%, var(--red) 0%, var(--red-dk) 42%, var(--red-deep) 100%);border-radius:26px;padding:22px;box-shadow:0 26px 60px rgba(110,13,8,.3)}
+  .s-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;padding:4px 6px 16px}
+  .s-meta{color:#fff}
+  .s-count{font-size:11px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:rgba(255,255,255,.6)}
+  .s-title{font-size:clamp(22px,2.8vw,32px);letter-spacing:-1.2px;line-height:1.02;margin:6px 0 6px;font-weight:800}
+  .s-desc{font-size:14px;line-height:1.5;color:rgba(255,255,255,.8);max-width:56ch}
+  .s-nav{display:flex;gap:8px;flex-shrink:0}
+  .navbtn{width:42px;height:42px;border-radius:50%;border:2px solid rgba(255,255,255,.4);background:rgba(255,255,255,.12);color:#fff;font-size:18px;font-weight:800;cursor:pointer;transition:.18s}
+  .navbtn:hover{background:#fff;color:var(--red);border-color:#fff}
+
+  .viewport{overflow:hidden;border-radius:18px}
+  .track{display:flex;transition:transform .45s cubic-bezier(.4,0,.2,1)}
+  .slide{min-width:100%;position:relative}
+
+  .stage{position:relative;background:var(--cream);border-radius:18px;overflow:hidden;border:3px solid rgba(255,255,255,.5)}
+  canvas{display:block;width:100%;height:auto;aspect-ratio:900/560;touch-action:none}
+  canvas.brush{cursor:none}
+  canvas.aim{cursor:crosshair}
+
+  .hud{position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;padding:12px 14px;pointer-events:none;font-size:10px;letter-spacing:1px;text-transform:uppercase;font-weight:800}
+  .hud-box{background:rgba(255,251,244,.9);border:2px solid var(--line-w);border-radius:12px;padding:7px 11px;display:flex;gap:13px;color:var(--ink-2)}
+  .hud-val{font-size:18px;letter-spacing:-.5px;color:var(--ink)}
+  .hud-val.g{color:var(--green-dk)}
+  .lives{display:flex;gap:4px;margin-top:3px}
+  .life{width:12px;height:14px;background:#fff;border:2px solid var(--ink-2);border-radius:4px 4px 45% 45%}
+  .life.off{background:var(--cream-2);border-color:var(--ink-3);opacity:.5}
+  .bar{position:absolute;bottom:0;left:0;height:5px;background:var(--green);width:0%;transition:width .3s}
+
+  .ov{position:absolute;inset:0;display:grid;place-items:center;text-align:center;background:rgba(255,247,234,.95);padding:22px}
+  .ov.hide{display:none}
+  .ov h2{font-size:clamp(21px,2.6vw,32px);letter-spacing:-1.2px;color:var(--red-deep);font-weight:800}
+  .ov p{margin:9px auto 0;color:var(--ink-2);font-size:13.5px;line-height:1.55;max-width:44ch}
+  .ov .big{font-size:52px;font-weight:800;letter-spacing:-3px;color:var(--green-dk);line-height:1;margin-bottom:4px}
+  .ov button{margin-top:18px;background:var(--red);color:#fff;border:0;border-radius:999px;padding:14px 32px;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 10px 24px rgba(225,38,28,.28)}
+  .ov .hint{margin-top:12px;font-size:10.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink-3)}
+
+  .dots{display:flex;justify-content:center;gap:9px;padding:18px 0 2px}
+  .dot{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.35);border:0;cursor:pointer;transition:.2s;padding:0}
+  .dot.on{background:#fff;width:26px;border-radius:5px}
+  .sprite-note{margin:14px 0 0;font-size:11px;color:rgba(255,255,255,.55);text-align:center;letter-spacing:.4px}
+
+  .reg{margin:26px 0 0;background:var(--ochre-lt);border:2px solid #E8D3A6;border-radius:24px;padding:34px;display:grid;grid-template-columns:1.05fr .95fr;gap:32px;align-items:center}
+  .reg-tag{font-size:11px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;color:var(--ochre-dk)}
+  .reg h2{font-size:clamp(24px,2.9vw,34px);letter-spacing:-1.4px;line-height:1.04;margin:8px 0 12px;color:var(--red)}
+  .reg p{font-size:14.5px;line-height:1.62;color:#6E5C41;max-width:46ch}
+  .scoreline{margin-top:16px;display:flex;gap:10px;flex-wrap:wrap}
+  .chip{background:#fff;border:2px solid #E8D3A6;border-radius:999px;padding:7px 14px;font-size:12px;font-weight:700;color:var(--ochre-dk)}
+  .chip b{color:var(--ink)}
+  .form{display:grid;gap:10px;background:#fff;border:2px solid #E8D3A6;border-radius:18px;padding:22px}
+  .form label{font-size:10.5px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--ink-2)}
+  .form input[type=text],.form input[type=email]{width:100%;padding:12px 13px;border:2px solid var(--line-w);border-radius:11px;font-size:14px;font-family:inherit;color:var(--ink);background:var(--cream)}
+  .form input:focus{outline:0;border-color:var(--red)}
+  .check{display:flex;gap:9px;align-items:flex-start;font-size:11.5px;line-height:1.45;color:var(--ink-2)}
+  .check input{margin-top:2px;width:16px;height:16px;accent-color:var(--red)}
+  .form button{background:var(--red);color:#fff;border:0;border-radius:999px;padding:13px;font-weight:800;font-size:14px;cursor:pointer;margin-top:2px}
+  .form button:disabled{background:var(--ink-3);cursor:not-allowed}
+  .form-msg{font-size:11.5px;font-weight:700;min-height:15px}
+  .form-msg.ok{color:var(--green-dk)}
+  .form-msg.err{color:var(--red)}
+  .form-msg.wait{color:var(--ochre-dk)}
+
+  footer{border-top:2px solid var(--line-w);margin-top:34px;padding:22px 0 46px;color:var(--ink-3);font-size:11.5px;display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}
+
+  @media(max-width:860px){
+    .reg{grid-template-columns:1fr;padding:24px}
+    .s-head{flex-direction:column}
+    .s-nav{align-self:flex-end}
+    .totals{gap:16px}
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div class="brand">
+        <div class="brand-mark"><span>C</span></div>
+        <div class="brand-name">Dientuches</div>
+      </div>
+      <div class="totals">
+        <div><div class="t-n" id="tot-score">0</div><div class="t-l">Puntos totales</div></div>
+        <div><div class="t-n" id="tot-games">0</div><div class="t-l">Partidas jugadas</div></div>
+        <div><div class="t-n">3</div><div class="t-l">Juegos</div></div>
+      </div>
+    </div>
+
+    <section class="slider" id="slider">
+      <div class="s-head">
+        <div class="s-meta">
+          <div class="s-count" id="s-count">Juego 1 de 3</div>
+          <h2 class="s-title" id="s-title">Libera a Sarraldo</h2>
+          <p class="s-desc" id="s-desc">Sarraldo está atrapado en una armadura de sarro. Cepilla como si fueran tus dientes y quítale el sarro por completo.</p>
+        </div>
+        <div class="s-nav">
+          <button class="navbtn" id="prev" aria-label="Juego anterior">‹</button>
+          <button class="navbtn" id="next" aria-label="Juego siguiente">›</button>
+        </div>
+      </div>
+
+      <div class="viewport" id="viewport">
+        <div class="track" id="track">
+
+          <div class="slide">
+            <div class="stage">
+              <canvas id="c1" class="brush"></canvas>
+              <div class="hud">
+                <div class="hud-box">
+                  <div>Puntos<div class="hud-val" id="h1-score">0</div></div>
+                  <div>Combo<div class="hud-val g" id="h1-combo">x1</div></div>
+                </div>
+                <div class="hud-box"><div>Vidas<div class="lives" id="h1-lives"></div></div></div>
+              </div>
+              <div class="bar" id="h1-bar"></div>
+              <div class="ov" id="ov-1">
+                <div>
+                  <div class="big" id="ov-1-big" style="display:none">0</div>
+                  <h2 id="ov-1-t">Libera a Sarraldo</h2>
+                  <p id="ov-1-p">Frota rápido sobre la armadura antes de que llegue.</p>
+                  <button id="ov-1-b">Empezar a cepillar</button>
+                  <p class="hint" id="ov-1-h">Ratón o dedo sobre el diente</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="slide">
+            <div class="stage">
+              <canvas id="c2" class="aim"></canvas>
+              <div class="hud">
+                <div class="hud-box">
+                  <div>Puntos<div class="hud-val" id="h2-score">0</div></div>
+                  <div>Oleada<div class="hud-val g" id="h2-wave">1</div></div>
+                </div>
+                <div class="hud-box"><div>Salud<div class="lives" id="h2-lives"></div></div></div>
+              </div>
+              <div class="bar" id="h2-bar"></div>
+              <div class="ov" id="ov-2">
+                <div>
+                  <div class="big" id="ov-2-big" style="display:none">0</div>
+                  <h2 id="ov-2-t">Defensa antibacterias</h2>
+                  <p id="ov-2-p">Las bacterias van directo al diente. Haz clic para disparar pasta y detenerlas.</p>
+                  <button id="ov-2-b">Empezar a disparar</button>
+                  <p class="hint" id="ov-2-h">Clic o toque para apuntar</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="slide">
+            <div class="stage">
+              <canvas id="c3"></canvas>
+              <div class="hud">
+                <div class="hud-box">
+                  <div>Puntos<div class="hud-val" id="h3-score">0</div></div>
+                  <div>Nivel<div class="hud-val g" id="h3-level">1</div></div>
+                </div>
+                <div class="hud-box"><div>Vidas<div class="lives" id="h3-lives"></div></div></div>
+              </div>
+              <div class="bar" id="h3-bar"></div>
+              <div class="ov" id="ov-3">
+                <div>
+                  <div class="big" id="ov-3-big" style="display:none">0</div>
+                  <h2 id="ov-3-t">Dientino al camión</h2>
+                  <p id="ov-3-p">Cruza la calle esquivando el tráfico y la comida chatarra hasta el camión rojo.</p>
+                  <button id="ov-3-b">Empezar a cruzar</button>
+                  <p class="hint" id="ov-3-h">Flechas del teclado o swipe</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="dots" id="dots">
+        <button class="dot on" data-i="0" aria-label="Juego 1"></button>
+        <button class="dot" data-i="1" aria-label="Juego 2"></button>
+        <button class="dot" data-i="2" aria-label="Juego 3"></button>
+      </div>
+      <p class="sprite-note" id="sprite-note">Cargando personajes desde el repositorio…</p>
+    </section>
+
+    <section class="reg" id="reg">
+      <div>
+        <div class="reg-tag" id="reg-tag">Demo · Registro simulado</div>
+        <h2 id="reg-title">¡GANA un peluche de Sarraldo!</h2>
+        <p id="reg-copy">Juega los tres retos y registra tu resultado. Si quedas entre los 20 mejores, nos pondremos en contacto contigo para mandarte hasta tu casa un Sarraldo edición limitada con armadura removible.</p>
+        <div class="scoreline">
+          <div class="chip">Cepillado <b id="chip-1">0</b></div>
+          <div class="chip">Bacterias <b id="chip-2">0</b></div>
+          <div class="chip">Dientino <b id="chip-3">0</b></div>
+          <div class="chip">Total <b id="chip-t">0</b></div>
+        </div>
+      </div>
+      <form class="form" id="reg-form" novalidate="">
+        <div>
+          <label for="reg-name">Nombre</label>
+          <input type="text" id="reg-name" name="name" autocomplete="name" placeholder="Tu nombre">
+        </div>
+        <div>
+          <label for="reg-email">Correo</label>
+          <input type="email" id="reg-email" name="email" autocomplete="email" placeholder="tucorreo@ejemplo.com">
+        </div>
+        <label class="check" for="reg-terms">
+          <input type="checkbox" id="reg-terms">
+          <span id="reg-terms-copy">Acepto el aviso de privacidad y que me contacten si quedo entre los 20 mejores.</span>
+        </label>
+        <button type="submit" id="reg-submit" disabled="">Juega una partida primero</button>
+        <div class="form-msg wait" id="reg-msg">El envío es simulado en esta demo.</div>
+      </form>
+    </section>
+
+    <footer>
+      <p id="foot-1">*Demo interactiva. Sarraldo y Dientino son personajes ficticios con fines educativos. El registro no envía datos.</p>
+      <p id="foot-2">© 2026 · Concepto</p>
+    </footer>
+  </div>
+
+<script>
+(function(){
+/* =========================================================
+   SPRITES — repo ElJust-in/dientuches vía jsDelivr
+   Si el HTML vive en el mismo repo, también prueba rutas locales.
+   ========================================================= */
+var CDN='https://cdn.jsdelivr.net/gh/ElJust-in/dientuches@main/';
+var CANDIDATES={
+  armor:['Sarraldoconarmadura.png','sarraldoconarmadura.png'],
+  free:['sarraldosinarmadura.png','Sarraldosinarmadura.png'],
+  brush:['cepillo.png','Cepillo.png','cepillo-colgate.png']
+};
+var NUDGE={x:0,y:0,scale:1};
+var IMG={}, loadedCount=0;
+
+function tryLoad(names,cb){
+  var urls=[],i;
+  for(i=0;i<names.length;i++) urls.push(CDN+names[i]);
+  for(i=0;i<names.length;i++) urls.push(names[i]);
+  var k=0;
+  (function go(){
+    if(k>=urls.length){ cb(null); return; }
+    var im=new Image(); im.crossOrigin='anonymous';
+    im.onload=function(){ cb(im); };
+    im.onerror=function(){ k++; go(); };
+    im.src=urls[k];
+  })();
+}
+var note=document.getElementById('sprite-note');
+function loadAll(done){
+  var keys=Object.keys(CANDIDATES), pending=keys.length;
+  keys.forEach(function(key){
+    tryLoad(CANDIDATES[key],function(im){
+      IMG[key]=im; if(im) loadedCount++;
+      if(--pending===0){
+        note.textContent = (IMG.armor&&IMG.free)
+          ? 'Personajes cargados desde ElJust-in/dientuches ('+loadedCount+'/3)'+(IMG.brush?'':' · cepillo en modo vectorial')
+          : 'No se pudieron cargar los PNG · corriendo en modo vectorial';
+        done();
+      }
+    });
+  });
+}
+
+/* =========================================================
+   BASE
+   ========================================================= */
+var W=900,H=560;
+var C={
+  ink:'#2A2320', line:'#6E5F52', cream:'#FFF7EA',
+  hex:'#F0E3CF', ring:'rgba(190,160,120,.32)',
+  crustB:'#DCC286', crustLine:'#8A6A33',
+  green:'#17A67B', greenDk:'#0E7A5A', red:'#E1261C', redDk:'#A8140E',
+  bristle:'#F4F1EA', bristleLine:'#B9AFA0',
+  asphalt:'#4A4340', asphalt2:'#403A37', kerb:'#EFE3CE',
+  germ1:'#8FBF3F', germ2:'#B5559E', germ3:'#E08A2E'
+};
+function mk(w,h){ var c=document.createElement('canvas'); c.width=w; c.height=h||w; return c; }
+function setup(cv){
+  var ctx=cv.getContext('2d'), dpr=Math.min(2,window.devicePixelRatio||1);
+  cv.width=W*dpr; cv.height=H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+  return ctx;
+}
+function local(cv,e){
+  var r=cv.getBoundingClientRect();
+  return { x:(e.clientX-r.left)*(W/r.width), y:(e.clientY-r.top)*(H/r.height) };
+}
+function livesEl(id,n,total){
+  var el=document.getElementById(id),html='';
+  for(var i=0;i<total;i++) html+='<i class="life'+(i<n?'':' off')+'"></i>';
+  el.innerHTML=html;
+}
+function hexPath(c,cx,cy,r){
+  c.beginPath();
+  for(var i=0;i<6;i++){
+    var a=Math.PI/180*(60*i-30), x=cx+r*Math.cos(a), y=cy+r*Math.sin(a);
+    if(i===0) c.moveTo(x,y); else c.lineTo(x,y);
+  }
+  c.closePath();
+}
+var hexBg=mk(W,H);
+(function(){
+  var b=hexBg.getContext('2d');
+  b.fillStyle=C.cream; b.fillRect(0,0,W,H);
+  b.strokeStyle=C.hex; b.lineWidth=2;
+  var r=52, hw=Math.sqrt(3)*r;
+  for(var row=-1;row<H/(r*1.5)+2;row++)
+    for(var col=-1;col<W/hw+2;col++)
+      { hexPath(b,col*hw+((row%2)?hw/2:0),row*r*1.5,r); b.stroke(); }
+  var g=b.createRadialGradient(W/2,H/2,W*0.18,W/2,H/2,W*0.72);
+  g.addColorStop(0,'rgba(255,255,255,0)'); g.addColorStop(1,'rgba(180,140,100,.22)');
+  b.fillStyle=g; b.fillRect(0,0,W,H);
+})();
+
+/* silueta molar compartida */
+function toothPath(c,w,h){
+  c.beginPath();
+  c.moveTo(w*0.07,h*0.32);
+  c.bezierCurveTo(w*0.00,h*0.02,w*1.00,h*0.02,w*0.93,h*0.32);
+  c.bezierCurveTo(w*0.96,h*0.55,w*0.90,h*0.72,w*0.80,h*0.96);
+  c.bezierCurveTo(w*0.72,h*1.04,w*0.62,h*0.90,w*0.56,h*0.70);
+  c.bezierCurveTo(w*0.52,h*0.60,w*0.48,h*0.60,w*0.44,h*0.70);
+  c.bezierCurveTo(w*0.38,h*0.90,w*0.28,h*1.04,w*0.20,h*0.96);
+  c.bezierCurveTo(w*0.10,h*0.72,w*0.04,h*0.55,w*0.07,h*0.32);
+  c.closePath();
+}
+function drawMolarFace(c,w,h){
+  var eyeY=h*0.40, exL=w*0.34, exR=w*0.66, er=h*0.088;
+  c.globalAlpha=.85; c.fillStyle='#F5A3A3';
+  c.beginPath(); c.ellipse(w*0.20,h*0.53,w*0.095,h*0.04,0,0,6.284); c.fill();
+  c.beginPath(); c.ellipse(w*0.80,h*0.53,w*0.095,h*0.04,0,0,6.284); c.fill();
+  c.globalAlpha=1;
+  for(var s=0;s<2;s++){
+    var ex=(s===0)?exL:exR;
+    c.fillStyle='#fff'; c.beginPath(); c.ellipse(ex,eyeY,er*1.05,er*1.12,0,0,6.284); c.fill();
+    c.fillStyle='#8B5E3C'; c.beginPath(); c.arc(ex,eyeY,er*0.8,0,6.284); c.fill();
+    c.fillStyle='#3A2216'; c.beginPath(); c.arc(ex,eyeY,er*0.44,0,6.284); c.fill();
+    c.fillStyle='#fff'; c.beginPath(); c.arc(ex-er*0.3,eyeY-er*0.36,er*0.22,0,6.284); c.fill();
+    c.strokeStyle='#6B3F22'; c.lineWidth=Math.max(1.4,h*0.018); c.lineCap='round';
+    c.beginPath(); c.arc(ex,eyeY-er*1.62,er*0.82,Math.PI*1.13,Math.PI*1.87); c.stroke();
+  }
+  var mw=w*0.19, my=h*0.585;
+  c.fillStyle='#5B2C1D'; c.beginPath(); c.ellipse(w*0.5,my,mw,h*0.06,0,0,Math.PI); c.fill();
+  c.fillStyle='#fff'; c.beginPath(); c.ellipse(w*0.5,my+h*0.004,mw*0.76,h*0.018,0,0,Math.PI); c.fill();
+  c.fillStyle='#F2736E'; c.beginPath(); c.ellipse(w*0.5,my+h*0.045,mw*0.5,h*0.024,0,0,Math.PI); c.fill();
+  c.lineCap='butt';
+}
+function vectorMolarTile(size){
+  var t=mk(size), x=t.getContext('2d');
+  var w=size*0.76,h=size*0.9,ox=(size-w)/2,oy=(size-h)/2;
+  x.save(); x.translate(ox,oy);
+  toothPath(x,w,h); x.fillStyle='#fff'; x.fill();
+  x.save(); toothPath(x,w,h); x.clip(); drawMolarFace(x,w,h); x.restore();
+  toothPath(x,w,h); x.lineWidth=size*0.022; x.strokeStyle=C.line; x.stroke();
+  x.restore();
+  return t;
+}
+function makeTile(img,size,nudge){
+  if(!img) return vectorMolarTile(size);
+  var t=mk(size), x=t.getContext('2d');
+  var sw=img.naturalWidth||img.width, sh=img.naturalHeight||img.height;
+  var sc=Math.min(size/sw,size/sh)*((nudge&&nudge.scale)||1)*0.99;
+  var dw=sw*sc, dh=sh*sc;
+  x.imageSmoothingQuality='high';
+  x.drawImage(img,(size-dw)/2+((nudge&&nudge.x)||0),(size-dh)/2+((nudge&&nudge.y)||0),dw,dh);
+  return t;
+}
+/* gorra roja para Dientino */
+function drawCap(c,cx,topY,w){
+  c.save();
+  c.translate(cx,topY);
+  c.lineWidth=Math.max(2,w*0.035); c.strokeStyle=C.redDk; c.fillStyle=C.red;
+  c.beginPath(); c.ellipse(0,0,w*0.40,w*0.30,0,Math.PI,0); c.fill(); c.stroke();
+  c.beginPath();
+  c.moveTo(w*0.06,-w*0.02);
+  c.quadraticCurveTo(w*0.62,-w*0.06,w*0.60,w*0.10);
+  c.quadraticCurveTo(w*0.40,w*0.14,w*0.06,w*0.06);
+  c.closePath(); c.fill(); c.stroke();
+  c.fillStyle='#fff'; c.globalAlpha=.35;
+  c.beginPath(); c.ellipse(-w*0.14,-w*0.13,w*0.10,w*0.06,-0.4,0,6.284); c.fill();
+  c.globalAlpha=1;
+  c.fillStyle=C.redDk;
+  c.beginPath(); c.arc(0,-w*0.28,w*0.035,0,6.284); c.fill();
+  c.restore();
+}
+
+/* audio */
+var AC=null,scrubGain=null;
+function initAudio(){
+  if(AC) return;
+  try{
+    AC=new (window.AudioContext||window.webkitAudioContext)();
+    var len=AC.sampleRate*2,buf=AC.createBuffer(1,len,AC.sampleRate),d=buf.getChannelData(0);
+    for(var i=0;i<len;i++) d[i]=Math.random()*2-1;
+    var s=AC.createBufferSource(); s.buffer=buf; s.loop=true;
+    var bp=AC.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=2000; bp.Q.value=.7;
+    scrubGain=AC.createGain(); scrubGain.gain.value=0;
+    s.connect(bp); bp.connect(scrubGain); scrubGain.connect(AC.destination); s.start();
+  }catch(e){ AC=null; }
+}
+function scrub(v){ if(AC&&scrubGain) scrubGain.gain.setTargetAtTime(v,AC.currentTime,.06); }
+function tone(f,type){
+  if(!AC) return;
+  try{
+    var o=AC.createOscillator(),g=AC.createGain();
+    o.type=type||'triangle'; o.frequency.value=f;
+    g.gain.setValueAtTime(.0001,AC.currentTime);
+    g.gain.exponentialRampToValueAtTime(.14,AC.currentTime+.01);
+    g.gain.exponentialRampToValueAtTime(.0001,AC.currentTime+.35);
+    o.connect(g); g.connect(AC.destination); o.start(); o.stop(AC.currentTime+.37);
+  }catch(e){}
+}
+
+function Overlay(i){
+  var root=document.getElementById('ov-'+i);
+  var t=document.getElementById('ov-'+i+'-t'), p=document.getElementById('ov-'+i+'-p');
+  var b=document.getElementById('ov-'+i+'-b'), h=document.getElementById('ov-'+i+'-h');
+  var big=document.getElementById('ov-'+i+'-big'), action=null;
+  b.addEventListener('click',function(){ if(action) action(); });
+  return {
+    show:function(o){
+      t.textContent=o.title; p.innerHTML=o.copy; b.textContent=o.btn; h.textContent=o.hint||'';
+      if(o.score!==undefined){ big.style.display='block'; big.textContent=o.score; } else big.style.display='none';
+      action=o.action; root.classList.remove('hide');
+    },
+    hide:function(){ root.classList.add('hide'); }
+  };
+}
+
+var bestScores=[0,0,0], gamesPlayed=0, hasPlayed=false;
+function pushScore(idx,val){
+  gamesPlayed++;
+  if(val>bestScores[idx]) bestScores[idx]=val;
+  hasPlayed=true;
+  document.getElementById('chip-1').textContent=bestScores[0];
+  document.getElementById('chip-2').textContent=bestScores[1];
+  document.getElementById('chip-3').textContent=bestScores[2];
+  var tot=bestScores[0]+bestScores[1]+bestScores[2];
+  document.getElementById('chip-t').textContent=tot;
+  document.getElementById('tot-score').textContent=tot;
+  document.getElementById('tot-games').textContent=gamesPlayed;
+  var btn=document.getElementById('reg-submit'), msg=document.getElementById('reg-msg');
+  if(!btn.dataset.done){
+    btn.disabled=false; btn.textContent='Registrar mi resultado';
+    msg.className='form-msg wait'; msg.textContent='Envío simulado · no se guardan datos.';
+  }
+}
+
+/* =========================================================
+   CEPILLO — sprite real o vector fiel a la referencia
+   ========================================================= */
+var brushTile=null, BRUSH_H=250;
+function buildBrushTile(){
+  if(IMG.brush){
+    var im=IMG.brush;
+    var sw=im.naturalWidth||im.width, sh=im.naturalHeight||im.height;
+    var t=mk(Math.max(sw,sh)); var x=t.getContext('2d');
+    var s=t.width;
+    x.translate(s/2,s/2); x.rotate(-Math.PI/4);
+    x.imageSmoothingQuality='high';
+    x.drawImage(im,-sw/2,-sh/2,sw,sh);
+    return t;
+  }
+  var size=340, c=mk(size), g=c.getContext('2d');
+  g.translate(size/2,size/2);
+  g.lineJoin='round';
+  g.beginPath();
+  g.moveTo(-9,-60);
+  g.bezierCurveTo(-17,-18,-16,26,-13,70);
+  g.quadraticCurveTo(-13,112,0,114);
+  g.quadraticCurveTo(13,112,13,70);
+  g.bezierCurveTo(16,26,17,-18,9,-60);
+  g.closePath();
+  g.fillStyle=C.red; g.fill();
+  g.lineWidth=4; g.strokeStyle=C.redDk; g.stroke();
+  g.save(); g.globalAlpha=.42; g.strokeStyle='#fff'; g.lineWidth=4; g.lineCap='round';
+  g.beginPath(); g.moveTo(-7,-40); g.bezierCurveTo(-12,0,-11,44,-8,84); g.stroke(); g.restore();
+  g.strokeStyle=C.redDk; g.lineWidth=2.4; g.globalAlpha=.8;
+  for(var i=0;i<7;i++){
+    var yy=6+i*11;
+    g.beginPath(); g.moveTo(-9,yy); g.lineTo(9,yy); g.stroke();
+  }
+  g.globalAlpha=1;
+  g.beginPath();
+  g.moveTo(-9,-58); g.quadraticCurveTo(-14,-76,-15,-92);
+  g.lineTo(15,-92); g.quadraticCurveTo(14,-76,9,-58);
+  g.closePath(); g.fillStyle=C.red; g.fill(); g.lineWidth=4; g.strokeStyle=C.redDk; g.stroke();
+  g.beginPath();
+  if(g.roundRect) g.roundRect(-18,-146,36,58,16); else g.rect(-18,-146,36,58);
+  g.fillStyle=C.red; g.fill(); g.lineWidth=4; g.strokeStyle=C.redDk; g.stroke();
+  g.strokeStyle=C.bristleLine; g.lineWidth=1.8;
+  for(var r=0;r<4;r++){
+    for(var col=0;col<3;col++){
+      var bx=-11+col*11, by=-158+r*11;
+      g.fillStyle=(r===1&&col===1)?'#DCEFE7':C.bristle;
+      g.beginPath();
+      if(g.roundRect) g.roundRect(bx-4,by-6,8,15,3); else g.rect(bx-4,by-6,8,15);
+      g.fill(); g.stroke();
+    }
+  }
+  return c;
+}
+function drawBrush(ctx,px,py,dirAng,speed,turbo){
+  if(!brushTile) return;
+  var tilt=(speed>60?dirAng*0.18:0)-0.38;
+  var sc=(BRUSH_H/brushTile.height)*(turbo?1.18:1);
+  ctx.save();
+  ctx.translate(px,py); ctx.rotate(tilt); ctx.scale(sc,sc);
+  if(turbo){
+    ctx.save(); ctx.globalAlpha=.45; ctx.shadowColor=C.green; ctx.shadowBlur=26;
+    ctx.drawImage(brushTile,-brushTile.width/2,-brushTile.height*0.34); ctx.restore();
+  }
+  ctx.drawImage(brushTile,-brushTile.width/2,-brushTile.height*0.34);
+  ctx.restore();
+}
+
+/* =========================================================
+   JUEGO 1 — Libera a Sarraldo
+   ========================================================= */
+var G1=(function(){
+  var cv=document.getElementById('c1'), ctx=null, ov=null;
+  var TS=224, G=10;
+  var heroTile=null, villTile=null, darkTile=null, alphaMap=null, cells=[], totalCov=0;
+  var chars=[],foam=[],chunks=[],sparks=[],pops=[];
+  var score=0,combo=1,lives=3,level=1,freed=0;
+  var running=false,spawnT=.5,flash=0,shake=0,turbo=0;
+  var px=W/2,py=H/2,ppx=px,ppy=py,spd=0,inside=false;
+
+  function armourFallback(){
+    var t=mk(TS), x=t.getContext('2d');
+    var w=TS*0.76,h=TS*0.9,ox=(TS-w)/2,oy=(TS-h)/2;
+    x.save(); x.translate(ox,oy);
+    x.save(); toothPath(x,w,h); x.clip();
+    x.fillStyle='#EBD6A6'; x.fillRect(0,0,w,h);
+    x.strokeStyle='#A8823C'; x.lineWidth=2;
+    for(var k=0;k<14;k++){
+      var cx=Math.random()*w, cy=Math.random()*h;
+      x.beginPath(); x.moveTo(cx,cy);
+      for(var s=0;s<3;s++){ cx+=(Math.random()-.5)*46; cy+=(Math.random()-.5)*46; x.lineTo(cx,cy); }
+      x.stroke();
+    }
+    x.fillStyle='#F6EBD2';
+    x.beginPath();
+    if(x.roundRect) x.roundRect(w*0.19,h*0.33,w*0.62,h*0.15,h*0.06); else x.rect(w*0.19,h*0.33,w*0.62,h*0.15);
+    x.fill(); x.lineWidth=3; x.strokeStyle=C.crustLine; x.stroke();
+    x.restore();
+    toothPath(x,w,h); x.lineWidth=5; x.strokeStyle=C.crustLine; x.stroke();
+    x.restore();
+    return t;
+  }
+  function buildMask(){
+    var x=villTile.getContext('2d'), d;
+    try{ d=x.getImageData(0,0,TS,TS); }catch(e){ return; }
+    alphaMap=new Uint8Array(TS*TS);
+    for(var i=0;i<TS*TS;i++) alphaMap[i]=d.data[i*4+3];
+    cells=[]; totalCov=0;
+    var step=TS/G;
+    for(var gy=0;gy<G;gy++) for(var gx=0;gx<G;gx++){
+      var hit=0,tot=0;
+      for(var sy=0;sy<step;sy+=2) for(var sx=0;sx<step;sx+=2){
+        var ax=Math.floor(gx*step+sx), ay=Math.floor(gy*step+sy);
+        tot++; if(alphaMap[ay*TS+ax]>80) hit++;
+      }
+      var cov=hit/Math.max(1,tot);
+      if(cov>0.15){ cells.push({id:gy*G+gx,cx:(gx+.5)*step,cy:(gy+.5)*step,cov:cov}); totalCov+=cov; }
+    }
+  }
+  function inChar(u,v){
+    if(!alphaMap) return true;
+    var ax=Math.floor(u*TS), ay=Math.floor(v*TS);
+    if(ax<0||ay<0||ax>=TS||ay>=TS) return false;
+    return alphaMap[ay*TS+ax]>70;
+  }
+  function darkFrom(tile){
+    var c=mk(TS), x=c.getContext('2d');
+    x.drawImage(tile,0,0);
+    x.globalCompositeOperation='source-in';
+    x.fillStyle=C.crustLine; x.fillRect(0,0,TS,TS);
+    return c;
+  }
+  function proj(t){
+    var p=340/(340+t.z), size=320*p;
+    return { p:p,w:size,h:size, x:W/2+t.ox*p*2.1, y:H/2+t.oy*p*2.1+Math.sin(t.wob)*10*p };
+  }
+  function spawn(){
+    if(!villTile) return;
+    var t={ ox:-160+Math.random()*320, oy:-80+Math.random()*160, z:900+Math.random()*120,
+      rot:(Math.random()-.5)*.34, spin:(Math.random()-.5)*.26, wob:Math.random()*6.28,
+      cleared:{}, cov:0, clean:0, state:'live', pop:0, work:mk(TS), dark:mk(TS) };
+    t.wctx=t.work.getContext('2d'); t.wctx.drawImage(villTile,0,0);
+    t.dctx=t.dark.getContext('2d'); t.dctx.drawImage(darkTile,0,0);
+    chars.push(t);
+  }
+  function hud(){
+    document.getElementById('h1-score').textContent=score;
+    document.getElementById('h1-combo').textContent='x'+Math.min(5,combo);
+    document.getElementById('h1-bar').style.width=Math.min(100,(score%250)/250*100)+'%';
+    livesEl('h1-lives',lives,3);
+  }
+  function erase(c,cx,cy,rr){
+    c.save(); c.globalCompositeOperation='destination-out';
+    var rg=c.createRadialGradient(cx,cy,0,cx,cy,rr);
+    rg.addColorStop(0,'rgba(0,0,0,1)'); rg.addColorStop(.75,'rgba(0,0,0,1)'); rg.addColorStop(1,'rgba(0,0,0,0)');
+    c.fillStyle=rg; c.beginPath(); c.arc(cx,cy,rr,0,6.284); c.fill(); c.restore();
+  }
+  function brush(dt){
+    var dx=px-ppx,dy=py-ppy;
+    spd=Math.sqrt(dx*dx+dy*dy)/Math.max(dt,.001);
+    ppx=px; ppy=py;
+    if(!inside||!running){ scrub(0); return; }
+    if(spd<60){ scrub(0); return; }
+    var order=chars.slice().sort(function(a,b){ return a.z-b.z; });
+    for(var i=0;i<order.length;i++){
+      var t=order[i]; if(t.state!=='live') continue;
+      var q=proj(t);
+      var u=(px-(q.x-q.w/2))/q.w, v=(py-(q.y-q.h/2))/q.h;
+      if(u<0||v<0||u>1||v>1) continue;
+      if(!inChar(u,v)) continue;
+      var rr=((turbo>0?50:36)/((q.w+q.h)/2))*TS, cx=u*TS, cy=v*TS;
+      erase(t.wctx,cx,cy,rr); erase(t.dctx,cx,cy,rr*0.93);
+      var gained=0;
+      for(var k=0;k<cells.length;k++){
+        var cl=cells[k]; if(t.cleared[cl.id]) continue;
+        if(Math.hypot(cl.cx-cx,cl.cy-cy)<rr*0.85){ t.cleared[cl.id]=1; t.cov+=cl.cov; gained++; }
+      }
+      if(gained){ score+=gained*2; hud(); }
+      t.clean=totalCov?Math.min(1,t.cov/totalCov):0;
+      scrub(.13);
+      for(var f=0;f<3;f++) foam.push({x:px+(Math.random()-.5)*24,y:py+(Math.random()-.5)*24,
+        vx:-dx*4+(Math.random()-.5)*90, vy:-dy*4+(Math.random()-.5)*90-30, r:3+Math.random()*7, life:.5+Math.random()*.5});
+      for(var ch=0;ch<2;ch++) chunks.push({x:px+(Math.random()-.5)*18,y:py+(Math.random()-.5)*18,
+        vx:-dx*2.5+(Math.random()-.5)*170, vy:-dy*2.5-70-Math.random()*90, life:.5+Math.random()*.35, sz:4+Math.random()*6, rot:Math.random()*6.28});
+      if(t.clean>=0.9){
+        t.state='pop'; t.pop=0; combo++; freed++;
+        score+=30*Math.min(5,combo); hud(); tone(740+Math.min(6,combo)*100);
+        pops.push({x:q.x,y:q.y-q.h*.4,life:1.1,txt:'¡LIBRE!'});
+        if(combo>=5) turbo=6;
+        for(var s2=0;s2<26;s2++) sparks.push({x:q.x,y:q.y,vx:(Math.random()-.5)*280,vy:(Math.random()-.5)*280,life:.6+Math.random()*.5,sz:4+Math.random()*7,rot:0});
+      }
+      break;
+    }
+  }
+  var ringT=0;
+  function draw(){
+    ctx.drawImage(hexBg,0,0);
+    ringT+=.008;
+    ctx.save(); ctx.strokeStyle=C.ring; ctx.lineWidth=2.5;
+    for(var i=0;i<7;i++){
+      var f=((i/7)+(ringT%1))%1, r=26+f*f*620;
+      ctx.globalAlpha=(1-f)*.8; hexPath(ctx,W/2,H/2,r); ctx.stroke();
+    }
+    ctx.restore();
+    ctx.fillStyle='rgba(242,160,160,.3)';
+    ctx.beginPath(); ctx.ellipse(W/2,H+70,W*0.55,150,0,0,6.284); ctx.fill();
+
+    ctx.save();
+    if(shake>0) ctx.translate((Math.random()-.5)*shake,(Math.random()-.5)*shake);
+
+    chars.slice().sort(function(a,b){ return b.z-a.z; }).forEach(function(t){
+      if(!heroTile) return;
+      var q=proj(t), ow=Math.max(2,3.4*q.p*1.4);
+      ctx.save(); ctx.translate(q.x,q.y); ctx.rotate(t.rot);
+      if(t.state==='pop'){ var e=t.pop/.45; ctx.globalAlpha=Math.max(0,1-e); ctx.scale(1+e*.4,1+e*.4); }
+      ctx.save(); ctx.globalAlpha=(ctx.globalAlpha||1)*0.14; ctx.fillStyle='#6E5F52';
+      ctx.beginPath(); ctx.ellipse(0,q.h*0.42,q.w*0.32,q.h*0.04,0,0,6.284); ctx.fill(); ctx.restore();
+      ctx.translate(-q.w/2,-q.h/2);
+      ctx.drawImage(heroTile,0,0,q.w,q.h);
+      ctx.drawImage(t.dark,ow*0.7,ow*0.7,q.w,q.h);
+      ctx.drawImage(t.work,0,0,q.w,q.h);
+      if(t.clean>0.55){
+        ctx.globalAlpha=(t.clean-0.55)*1.4;
+        ctx.strokeStyle='rgba(255,255,255,.9)'; ctx.lineWidth=Math.max(2,q.w*0.028); ctx.lineCap='round';
+        ctx.beginPath(); ctx.moveTo(q.w*0.30,q.h*0.32); ctx.quadraticCurveTo(q.w*0.23,q.h*0.19,q.w*0.40,q.h*0.14); ctx.stroke();
+        ctx.globalAlpha=1; ctx.lineCap='butt';
+      }
+      ctx.restore();
+
+      if(t.state==='live'&&t.z<220&&t.clean<0.88){
+        ctx.save(); ctx.translate(q.x,q.y);
+        ctx.strokeStyle='rgba(225,38,28,'+(0.3+0.3*Math.sin(performance.now()/90))+')';
+        ctx.lineWidth=4; ctx.setLineDash([10,8]);
+        ctx.beginPath(); ctx.ellipse(0,0,q.w*0.4,q.h*0.44,0,0,6.284); ctx.stroke(); ctx.restore();
+      }
+      if(t.state==='live'&&t.z<520){
+        var a=Math.min(1,(520-t.z)/220), trapped=t.clean<0.5;
+        var label=trapped?'SARRALDO ATRAPADO':'SARRALDO LIBRE';
+        ctx.save(); ctx.globalAlpha=a*.95;
+        var fs=Math.max(8,11*q.p*1.5);
+        ctx.font='800 '+fs+'px Helvetica,Arial,sans-serif'; ctx.textAlign='center';
+        var tw=ctx.measureText(label).width+fs*0.9, byy=q.y+q.h*0.5;
+        ctx.beginPath();
+        if(ctx.roundRect) ctx.roundRect(q.x-tw/2,byy-fs*0.85,tw,fs*1.5,fs*0.75); else ctx.rect(q.x-tw/2,byy-fs*0.85,tw,fs*1.5);
+        ctx.fillStyle=trapped?'#EFDCB0':'#C9EFDF'; ctx.fill();
+        ctx.lineWidth=Math.max(1.6,fs*0.13); ctx.strokeStyle=trapped?C.crustLine:C.greenDk; ctx.stroke();
+        ctx.fillStyle=trapped?'#6B5220':C.greenDk; ctx.fillText(label,q.x,byy+fs*0.32);
+        ctx.restore();
+      }
+    });
+
+    for(var fi=0;fi<foam.length;fi++){
+      var b=foam[fi];
+      ctx.globalAlpha=Math.max(0,Math.min(1,b.life*1.4));
+      ctx.beginPath(); ctx.arc(b.x,b.y,b.r,0,6.284);
+      ctx.fillStyle='#fff'; ctx.fill(); ctx.lineWidth=1.8; ctx.strokeStyle='#D9C7AE'; ctx.stroke();
+    }
+    for(var ci=0;ci<chunks.length;ci++){
+      var k=chunks[ci];
+      ctx.globalAlpha=Math.max(0,Math.min(1,k.life*1.5));
+      ctx.save(); ctx.translate(k.x,k.y); ctx.rotate(k.rot);
+      ctx.beginPath();
+      ctx.moveTo(-k.sz,-k.sz*.6); ctx.lineTo(k.sz*.8,-k.sz); ctx.lineTo(k.sz,k.sz*.7); ctx.lineTo(-k.sz*.7,k.sz); ctx.closePath();
+      ctx.fillStyle=C.crustB; ctx.fill(); ctx.lineWidth=2; ctx.strokeStyle=C.crustLine; ctx.stroke();
+      ctx.restore();
+    }
+    for(var si=0;si<sparks.length;si++){
+      var s=sparks[si];
+      ctx.globalAlpha=Math.max(0,Math.min(1,s.life*1.5));
+      ctx.save(); ctx.translate(s.x,s.y); ctx.rotate(s.rot);
+      ctx.beginPath();
+      ctx.moveTo(0,-s.sz); ctx.lineTo(s.sz*.32,0); ctx.lineTo(0,s.sz); ctx.lineTo(-s.sz*.32,0); ctx.closePath();
+      ctx.moveTo(-s.sz,0); ctx.lineTo(0,s.sz*.32); ctx.lineTo(s.sz,0); ctx.lineTo(0,-s.sz*.32); ctx.closePath();
+      ctx.fillStyle=C.green; ctx.fill(); ctx.restore();
+    }
+    ctx.globalAlpha=1;
+    for(var pi=0;pi<pops.length;pi++){
+      var pp=pops[pi];
+      ctx.save(); ctx.globalAlpha=Math.min(1,pp.life); ctx.textAlign='center';
+      var sc=1+(1.1-pp.life)*0.45;
+      ctx.translate(pp.x,pp.y); ctx.scale(sc,sc);
+      ctx.font='800 26px Helvetica,Arial,sans-serif';
+      ctx.lineWidth=7; ctx.strokeStyle='#fff'; ctx.strokeText(pp.txt,0,0);
+      ctx.lineWidth=2.5; ctx.strokeStyle=C.greenDk; ctx.strokeText(pp.txt,0,0);
+      ctx.fillStyle=C.green; ctx.fillText(pp.txt,0,0);
+      ctx.restore();
+    }
+    if(inside) drawBrush(ctx,px,py,Math.atan2(py-ppy,px-ppx),spd,turbo>0);
+    ctx.restore();
+
+    if(flash>0){ ctx.fillStyle='rgba(225,38,28,'+(flash*.2)+')'; ctx.fillRect(0,0,W,H); }
+    if(turbo>0){ ctx.strokeStyle='rgba(23,166,123,.8)'; ctx.lineWidth=6; ctx.strokeRect(3,3,W-6,H-6); }
+  }
+  function update(dt){
+    if(running){
+      level=1+Math.floor(score/250);
+      spawnT-=dt;
+      if(spawnT<=0&&chars.length<7){ spawn(); spawnT=Math.max(.55,1.5-level*.09); }
+      turbo=Math.max(0,turbo-dt);
+      brush(dt);
+      var sp=92+level*13;
+      for(var i=chars.length-1;i>=0;i--){
+        var t=chars[i];
+        t.wob+=dt*2.2; t.rot+=t.spin*dt*.4;
+        if(t.state==='pop'){ t.pop+=dt; if(t.pop>.45) chars.splice(i,1); continue; }
+        t.z-=sp*dt;
+        if(t.z<=30){
+          lives--; combo=1; flash=1; shake=14; tone(130,'sawtooth');
+          chars.splice(i,1); hud();
+          if(lives<=0) over();
+        }
+      }
+    }
+    for(var f=foam.length-1;f>=0;f--){ var p=foam[f]; p.life-=dt; p.vy+=240*dt; p.x+=p.vx*dt; p.y+=p.vy*dt; if(p.life<=0) foam.splice(f,1); }
+    for(var c2=chunks.length-1;c2>=0;c2--){ var k=chunks[c2]; k.life-=dt; k.vy+=430*dt; k.x+=k.vx*dt; k.y+=k.vy*dt; k.rot+=dt*7; if(k.life<=0) chunks.splice(c2,1); }
+    for(var s=sparks.length-1;s>=0;s--){ var q=sparks[s]; q.life-=dt; q.x+=q.vx*dt; q.y+=q.vy*dt; q.vx*=.96; q.vy*=.96; q.rot+=dt*6; if(q.life<=0) sparks.splice(s,1); }
+    for(var pz=pops.length-1;pz>=0;pz--){ pops[pz].life-=dt; pops[pz].y-=42*dt; if(pops[pz].life<=0) pops.splice(pz,1); }
+    if(flash>0) flash-=dt*2.2;
+    if(shake>0) shake-=dt*45;
+  }
+  function start(){
+    chars=[];foam=[];chunks=[];sparks=[];pops=[];
+    score=0;combo=1;lives=3;level=1;freed=0;spawnT=.4;turbo=0;
+    hud(); running=true; ov.hide();
+  }
+  function over(){
+    running=false; scrub(0); pushScore(0,score);
+    ov.show({ score:score,
+      title: score>900?'¡Técnica de dentista!':score>400?'¡Sarraldo respira!':'El sarro resistió',
+      copy:'Liberaste a <b>'+freed+'</b> Sarraldos. Baja al formulario para registrar tu resultado.',
+      btn:'Volver a jugar', hint:'Usa las flechas para el siguiente juego', action:start });
+  }
+  return {
+    init:function(){
+      ctx=setup(cv); ov=Overlay(1);
+      villTile = IMG.armor ? makeTile(IMG.armor,TS,null) : armourFallback();
+      heroTile = makeTile(IMG.free,TS,NUDGE);
+      darkTile = darkFrom(villTile); buildMask(); hud();
+      cv.addEventListener('pointermove',function(e){ e.preventDefault(); var l=local(cv,e); px=l.x; py=l.y; inside=true; },{passive:false});
+      cv.addEventListener('pointerdown',function(e){ e.preventDefault(); var l=local(cv,e); px=ppx=l.x; py=ppy=l.y; inside=true; },{passive:false});
+      cv.addEventListener('pointerleave',function(){ inside=false; scrub(0); });
+      ov.show({ title:'Libera a Sarraldo',
+        copy:'Frota rápido sobre la armadura antes de que llegue. Solo el gesto de cepillar la rompe.',
+        btn:'Empezar a cepillar', hint:'Ratón o dedo sobre el diente',
+        action:function(){ initAudio(); if(AC&&AC.state==='suspended') AC.resume(); start(); } });
+    },
+    update:update, draw:draw,
+    pause:function(){ if(running){ running=false; scrub(0);
+      ov.show({ title:'En pausa', copy:'Volviste al juego 1. ¿Seguimos cepillando?', btn:'Continuar', hint:'', action:function(){ running=true; ov.hide(); } }); } }
+  };
+})();
+
+/* =========================================================
+   JUEGO 2 — Defensa antibacterias
+   ========================================================= */
+var G2=(function(){
+  var cv=document.getElementById('c2'), ctx=null, ov=null, tile=null;
+  var germs=[],shots=[],splats=[],pops=[];
+  var score=0,wave=1,hp=3,running=false,spawnT=0,left=0,cool=0,shake=0,flash=0;
+  var TX=W/2, TY=H*0.66, TH=176;
+
+  function hud(){
+    document.getElementById('h2-score').textContent=score;
+    document.getElementById('h2-wave').textContent=wave;
+    document.getElementById('h2-bar').style.width=Math.min(100,(1-left/waveTotal())*100)+'%';
+    livesEl('h2-lives',hp,3);
+  }
+  function waveTotal(){ return 5+wave*3; }
+  function spawn(){
+    var side=Math.floor(Math.random()*3), x,y;
+    if(side===0){ x=-40; y=60+Math.random()*(H*0.55); }
+    else if(side===1){ x=W+40; y=60+Math.random()*(H*0.55); }
+    else { x=80+Math.random()*(W-160); y=-40; }
+    var tough=Math.random()<Math.min(.45,wave*0.07);
+    germs.push({ x:x,y:y, r:tough?26:20, hp:tough?3:1, maxhp:tough?3:1,
+      sp:34+wave*5+Math.random()*22, wob:Math.random()*6.28, rot:Math.random()*6.28,
+      col:tough?C.germ2:(Math.random()>.5?C.germ1:C.germ3), legs:5+Math.floor(Math.random()*4) });
+  }
+  function shoot(x,y){
+    if(cool>0||!running) return;
+    cool=.16;
+    var mx=TX, my=TY-TH*0.2, a=Math.atan2(y-my,x-mx);
+    shots.push({ x:mx,y:my, vx:Math.cos(a)*640, vy:Math.sin(a)*640, r:9, life:1.4 });
+    tone(520,'sine');
+  }
+  function drawGerm(g){
+    ctx.save(); ctx.translate(g.x,g.y); ctx.rotate(Math.sin(g.wob)*.2);
+    ctx.strokeStyle='rgba(42,35,32,.85)'; ctx.lineWidth=3; ctx.lineCap='round';
+    for(var i=0;i<g.legs;i++){
+      var a=(i/g.legs)*6.284+g.rot;
+      ctx.beginPath(); ctx.moveTo(Math.cos(a)*g.r*0.85,Math.sin(a)*g.r*0.85);
+      ctx.lineTo(Math.cos(a)*(g.r+9),Math.sin(a)*(g.r+9)); ctx.stroke();
+    }
+    ctx.beginPath(); ctx.ellipse(0,0,g.r,g.r*0.9,0,0,6.284);
+    ctx.fillStyle=g.col; ctx.fill(); ctx.lineWidth=3.4; ctx.strokeStyle='rgba(42,35,32,.9)'; ctx.stroke();
+    ctx.fillStyle='rgba(255,255,255,.28)';
+    ctx.beginPath(); ctx.ellipse(-g.r*0.3,-g.r*0.3,g.r*0.32,g.r*0.24,-0.5,0,6.284); ctx.fill();
+    for(var e=0;e<2;e++){
+      var ex=(e===0?-1:1)*g.r*0.32;
+      ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(ex,-g.r*0.1,g.r*0.22,0,6.284); ctx.fill();
+      ctx.fillStyle='#2A2320'; ctx.beginPath(); ctx.arc(ex,-g.r*0.08,g.r*0.11,0,6.284); ctx.fill();
+    }
+    ctx.strokeStyle='#2A2320'; ctx.lineWidth=2.6;
+    ctx.beginPath(); ctx.arc(0,g.r*0.34,g.r*0.28,Math.PI*0.15,Math.PI*0.85); ctx.stroke();
+    if(g.maxhp>1){
+      var w=g.r*1.6;
+      ctx.fillStyle='rgba(42,35,32,.25)'; ctx.fillRect(-w/2,-g.r-15,w,5);
+      ctx.fillStyle=C.red; ctx.fillRect(-w/2,-g.r-15,w*(g.hp/g.maxhp),5);
+    }
+    ctx.restore();
+  }
+  function drawHero(){
+    ctx.save();
+    ctx.globalAlpha=.16; ctx.fillStyle='#6E5F52';
+    ctx.beginPath(); ctx.ellipse(TX,TY+TH*0.44,TH*0.32,TH*0.06,0,0,6.284); ctx.fill();
+    ctx.globalAlpha=1;
+    if(tile) ctx.drawImage(tile,TX-TH/2,TY-TH/2,TH,TH);
+    ctx.strokeStyle='rgba(23,166,123,'+(0.18+0.1*Math.sin(performance.now()/420))+')';
+    ctx.lineWidth=3; ctx.setLineDash([9,10]);
+    ctx.beginPath(); ctx.arc(TX,TY,TH*0.56,0,6.284); ctx.stroke(); ctx.setLineDash([]);
+    ctx.restore();
+  }
+  function update(dt){
+    cool=Math.max(0,cool-dt);
+    if(running){
+      spawnT-=dt;
+      if(spawnT<=0&&left>0){ spawn(); left--; spawnT=Math.max(.32,1.15-wave*.06); hud(); }
+      for(var i=germs.length-1;i>=0;i--){
+        var g=germs[i];
+        g.wob+=dt*3; g.rot+=dt*.7;
+        var a=Math.atan2(TY-g.y,TX-g.x);
+        g.x+=Math.cos(a)*g.sp*dt; g.y+=Math.sin(a)*g.sp*dt;
+        if(Math.hypot(TX-g.x,TY-g.y)<TH*0.36){
+          germs.splice(i,1); hp--; flash=1; shake=15; tone(140,'sawtooth'); hud();
+          if(hp<=0){ over(); return; }
+        }
+      }
+      for(var s=shots.length-1;s>=0;s--){
+        var sh=shots[s]; sh.life-=dt; sh.x+=sh.vx*dt; sh.y+=sh.vy*dt;
+        if(sh.life<=0||sh.x<-30||sh.x>W+30||sh.y<-30||sh.y>H+30){ shots.splice(s,1); continue; }
+        for(var j=germs.length-1;j>=0;j--){
+          var gg=germs[j];
+          if(Math.hypot(gg.x-sh.x,gg.y-sh.y)<gg.r+sh.r){
+            gg.hp--;
+            for(var p=0;p<7;p++) splats.push({x:sh.x,y:sh.y,vx:(Math.random()-.5)*180,vy:(Math.random()-.5)*180-40,r:3+Math.random()*5,life:.45});
+            shots.splice(s,1);
+            if(gg.hp<=0){
+              var val=gg.maxhp>1?25:10;
+              score+=val; hud(); tone(700,'sine');
+              pops.push({x:gg.x,y:gg.y,life:.8,txt:'+'+val});
+              germs.splice(j,1);
+            }
+            break;
+          }
+        }
+      }
+      if(left===0&&germs.length===0){
+        wave++; score+=40; left=waveTotal(); spawnT=.8; hud();
+        pops.push({x:W/2,y:H*0.28,life:1.2,txt:'OLEADA '+wave}); tone(880,'sine');
+      }
+    }
+    for(var k=splats.length-1;k>=0;k--){ var q=splats[k]; q.life-=dt; q.vy+=300*dt; q.x+=q.vx*dt; q.y+=q.vy*dt; if(q.life<=0) splats.splice(k,1); }
+    for(var pz=pops.length-1;pz>=0;pz--){ pops[pz].life-=dt; pops[pz].y-=34*dt; if(pops[pz].life<=0) pops.splice(pz,1); }
+    if(flash>0) flash-=dt*2.2;
+    if(shake>0) shake-=dt*46;
+  }
+  function draw(){
+    ctx.drawImage(hexBg,0,0);
+    ctx.save();
+    if(shake>0) ctx.translate((Math.random()-.5)*shake,(Math.random()-.5)*shake);
+    drawHero();
+    germs.forEach(drawGerm);
+    for(var s=0;s<shots.length;s++){
+      var sh=shots[s];
+      ctx.save(); ctx.translate(sh.x,sh.y);
+      ctx.beginPath(); ctx.ellipse(0,0,sh.r*1.5,sh.r,Math.atan2(sh.vy,sh.vx),0,6.284);
+      ctx.fillStyle='#fff'; ctx.fill(); ctx.lineWidth=2.6; ctx.strokeStyle=C.green; ctx.stroke();
+      ctx.restore();
+    }
+    for(var k=0;k<splats.length;k++){
+      var q=splats[k];
+      ctx.globalAlpha=Math.max(0,q.life*2.2);
+      ctx.beginPath(); ctx.arc(q.x,q.y,q.r,0,6.284);
+      ctx.fillStyle='#fff'; ctx.fill(); ctx.lineWidth=1.6; ctx.strokeStyle='#C9EFDF'; ctx.stroke();
+    }
+    ctx.globalAlpha=1;
+    for(var pi=0;pi<pops.length;pi++){
+      var pp=pops[pi];
+      ctx.save(); ctx.globalAlpha=Math.min(1,pp.life); ctx.textAlign='center';
+      ctx.font='800 20px Helvetica,Arial,sans-serif';
+      ctx.lineWidth=6; ctx.strokeStyle='#fff'; ctx.strokeText(pp.txt,pp.x,pp.y);
+      ctx.fillStyle=C.greenDk; ctx.fillText(pp.txt,pp.x,pp.y);
+      ctx.restore();
+    }
+    ctx.restore();
+    if(flash>0){ ctx.fillStyle='rgba(225,38,28,'+(flash*.22)+')'; ctx.fillRect(0,0,W,H); }
+  }
+  function start(){
+    germs=[];shots=[];splats=[];pops=[];
+    score=0;wave=1;hp=3;left=waveTotal();spawnT=.6;cool=0;
+    hud(); running=true; ov.hide();
+  }
+  function over(){
+    running=false; pushScore(1,score);
+    ov.show({ score:score,
+      title: score>600?'¡Escudo impenetrable!':score>250?'¡Buena defensa!':'Las bacterias ganaron',
+      copy:'Aguantaste <b>'+wave+'</b> oleadas. Baja al formulario para registrar tu resultado.',
+      btn:'Volver a jugar', hint:'', action:start });
+  }
+  return {
+    init:function(){
+      ctx=setup(cv); ov=Overlay(2); tile=makeTile(IMG.free,256,null); hud();
+      cv.addEventListener('pointerdown',function(e){ e.preventDefault(); var l=local(cv,e); shoot(l.x,l.y); },{passive:false});
+      ov.show({ title:'Defensa antibacterias',
+        copy:'Las bacterias van directo al diente. Haz clic para disparar pasta y detenerlas antes de que lo toquen.',
+        btn:'Empezar a disparar', hint:'Clic o toque para apuntar',
+        action:function(){ initAudio(); if(AC&&AC.state==='suspended') AC.resume(); start(); } });
+    },
+    update:update, draw:draw,
+    pause:function(){ if(running){ running=false;
+      ov.show({ title:'En pausa', copy:'El diente te espera. ¿Seguimos defendiendo?', btn:'Continuar', hint:'', action:function(){ running=true; ov.hide(); } }); } }
+  };
+})();
+
+/* =========================================================
+   JUEGO 3 — Dientino al camión
+   ========================================================= */
+var G3=(function(){
+  var cv=document.getElementById('c3'), ctx=null, ov=null, tile=null;
+  var TOP=60, LANE=55, LANES=8, BOT=H-TOP-LANE*LANES, STEPX=60, SAFE=3;
+  var lanes=[],player=null,score=0,level=1,lives=3,running=false,pops=[],flash=0,shake=0;
+
+  function hud(){
+    document.getElementById('h3-score').textContent=score;
+    document.getElementById('h3-level').textContent=level;
+    document.getElementById('h3-bar').style.width=Math.min(100,(1-(player?(player.y-TOP)/(H-TOP-30):1))*100)+'%';
+    livesEl('h3-lives',lives,3);
+  }
+  function laneY(i){ return TOP+LANE*i+LANE/2; }
+  function buildLanes(){
+    lanes=[];
+    for(var i=0;i<LANES;i++){
+      if(i===SAFE){ lanes.push({safe:true,items:[]}); continue; }
+      var dir=(i%2===0)?1:-1;
+      var kind=(i<2)?'car':(i<5?'junk':'car');
+      var speed=(52+level*16+Math.random()*32)*dir;
+      var n=2+Math.floor(Math.random()*2)+(level>2?1:0), items=[];
+      for(var k=0;k<n;k++){
+        var w=(kind==='car')?(78+Math.random()*54):(38+Math.random()*16);
+        items.push({ x:(W/n)*k+Math.random()*80, w:w, h:(kind==='car')?36:34,
+          kind:kind, sub:Math.floor(Math.random()*3),
+          col:(kind==='car')?['#B8433A','#6E5F52','#C8A24B'][Math.floor(Math.random()*3)]:null });
+      }
+      lanes.push({safe:false,dir:dir,speed:speed,items:items,kind:kind});
+    }
+  }
+  function resetPlayer(){ player={ x:W/2, y:H-BOT/2-4, w:44, h:50, hop:0 }; }
+  function move(dx,dy){
+    if(!running||!player) return;
+    player.x=Math.max(30,Math.min(W-30,player.x+dx*STEPX));
+    player.y=Math.max(TOP*0.5,Math.min(H-BOT/2-4,player.y+dy*LANE));
+    player.hop=1; tone(dy<0?620:420,'sine');
+    if(player.y<TOP+10) win();
+    hud();
+  }
+  function win(){
+    score+=100+level*25; level++; buildLanes(); resetPlayer(); hud();
+    pops.push({x:W/2,y:TOP+34,life:1.3,txt:'¡LLEGÓ AL CAMIÓN!'}); tone(920,'sine');
+  }
+  function hit(){
+    lives--; flash=1; shake=16; tone(130,'sawtooth'); resetPlayer(); hud();
+    if(lives<=0) over();
+  }
+  function drawTruck(){
+    ctx.save();
+    ctx.fillStyle='#F0E3CF'; ctx.fillRect(0,0,W,TOP);
+    ctx.fillStyle=C.red;
+    ctx.beginPath();
+    if(ctx.roundRect) ctx.roundRect(W*0.18,6,W*0.64,TOP-14,10); else ctx.rect(W*0.18,6,W*0.64,TOP-14);
+    ctx.fill(); ctx.lineWidth=3.4; ctx.strokeStyle=C.redDk; ctx.stroke();
+    ctx.fillStyle='#fff';
+    ctx.beginPath();
+    if(ctx.roundRect) ctx.roundRect(W*0.20,TOP*0.32,W*0.6,TOP*0.34,6); else ctx.rect(W*0.20,TOP*0.32,W*0.6,TOP*0.34);
+    ctx.fill();
+    ctx.fillStyle=C.red; ctx.font='800 20px Helvetica,Arial,sans-serif'; ctx.textAlign='center';
+    ctx.fillText('COLGATE',W/2,TOP*0.62);
+    ctx.fillStyle='#3A322E';
+    [W*0.28,W*0.42,W*0.62,W*0.76].forEach(function(wx){
+      ctx.beginPath(); ctx.arc(wx,TOP-8,7,0,6.284); ctx.fill();
+    });
+    ctx.restore();
+  }
+  function drawItem(it,y){
+    ctx.save(); ctx.translate(it.x,y);
+    if(it.kind==='car'){
+      ctx.fillStyle=it.col;
+      ctx.beginPath();
+      if(ctx.roundRect) ctx.roundRect(-it.w/2,-it.h/2,it.w,it.h,9); else ctx.rect(-it.w/2,-it.h/2,it.w,it.h);
+      ctx.fill(); ctx.lineWidth=3; ctx.strokeStyle='rgba(42,35,32,.85)'; ctx.stroke();
+      ctx.fillStyle='rgba(255,247,234,.75)';
+      ctx.beginPath();
+      if(ctx.roundRect) ctx.roundRect(-it.w*0.22,-it.h*0.32,it.w*0.44,it.h*0.4,5); else ctx.rect(-it.w*0.22,-it.h*0.32,it.w*0.44,it.h*0.4);
+      ctx.fill();
+      ctx.fillStyle='#2A2320';
+      ctx.beginPath(); ctx.arc(-it.w*0.28,it.h*0.5,6,0,6.284); ctx.fill();
+      ctx.beginPath(); ctx.arc(it.w*0.28,it.h*0.5,6,0,6.284); ctx.fill();
+    }else{
+      ctx.lineWidth=3; ctx.strokeStyle='rgba(42,35,32,.85)';
+      if(it.sub===0){
+        ctx.fillStyle='#C8A24B';
+        ctx.beginPath();
+        if(ctx.roundRect) ctx.roundRect(-14,-17,28,34,6); else ctx.rect(-14,-17,28,34);
+        ctx.fill(); ctx.stroke();
+        ctx.fillStyle='#B8433A'; ctx.fillRect(-14,-5,28,9);
+      }else if(it.sub===1){
+        ctx.fillStyle='#B8433A';
+        ctx.beginPath();
+        if(ctx.roundRect) ctx.roundRect(-18,-11,36,22,8); else ctx.rect(-18,-11,36,22);
+        ctx.fill(); ctx.stroke();
+        ctx.strokeStyle='#F7EDDC'; ctx.lineWidth=2.4;
+        ctx.beginPath(); ctx.moveTo(-8,-8); ctx.lineTo(-2,8); ctx.moveTo(4,-8); ctx.lineTo(10,8); ctx.stroke();
+      }else{
+        ctx.fillStyle='#8A6A33';
+        ctx.beginPath(); ctx.moveTo(-13,-15); ctx.lineTo(13,-15); ctx.lineTo(9,17); ctx.lineTo(-9,17); ctx.closePath();
+        ctx.fill(); ctx.stroke();
+        ctx.fillStyle='#F7EDDC'; ctx.fillRect(-15,-19,30,7); ctx.strokeRect(-15,-19,30,7);
+      }
+    }
+    ctx.restore();
+  }
+  function drawPlayer(){
+    if(!player) return;
+    var hop=player.hop>0?Math.sin(player.hop*Math.PI)*10:0;
+    ctx.save();
+    ctx.globalAlpha=.20; ctx.fillStyle='#2A2320';
+    ctx.beginPath(); ctx.ellipse(player.x,player.y+player.h*0.42,player.w*0.38,5,0,0,6.284); ctx.fill();
+    ctx.globalAlpha=1;
+    var sz=player.h*1.5;
+    if(tile) ctx.drawImage(tile,player.x-sz/2,player.y-hop-sz/2,sz,sz);
+    drawCap(ctx,player.x,player.y-hop-sz*0.29,sz*0.44);
+    ctx.restore();
+  }
+  function update(dt){
+    if(player&&player.hop>0) player.hop=Math.max(0,player.hop-dt*5);
+    if(running){
+      for(var i=0;i<lanes.length;i++){
+        var L=lanes[i]; if(L.safe) continue;
+        for(var k=0;k<L.items.length;k++){
+          var it=L.items[k];
+          it.x+=L.speed*dt;
+          if(L.speed>0&&it.x-it.w/2>W+40) it.x=-40-it.w/2;
+          if(L.speed<0&&it.x+it.w/2<-40) it.x=W+40+it.w/2;
+          if(player){
+            var y=laneY(i);
+            if(Math.abs(player.y-y)<LANE*0.52 && Math.abs(player.x-it.x)<(it.w/2+player.w*0.3)){ hit(); return; }
+          }
+        }
+      }
+    }
+    for(var pz=pops.length-1;pz>=0;pz--){ pops[pz].life-=dt; pops[pz].y-=26*dt; if(pops[pz].life<=0) pops.splice(pz,1); }
+    if(flash>0) flash-=dt*2.2;
+    if(shake>0) shake-=dt*48;
+  }
+  function draw(){
+    ctx.fillStyle=C.asphalt; ctx.fillRect(0,0,W,H);
+    ctx.save();
+    if(shake>0) ctx.translate((Math.random()-.5)*shake,(Math.random()-.5)*shake);
+    for(var i=0;i<LANES;i++){
+      var y0=TOP+LANE*i, L=lanes[i];
+      ctx.fillStyle=L&&L.safe?C.kerb:(i%2?C.asphalt2:C.asphalt);
+      ctx.fillRect(0,y0,W,LANE);
+      if(L&&!L.safe){
+        ctx.strokeStyle='rgba(255,247,234,.35)'; ctx.lineWidth=3; ctx.setLineDash([26,22]);
+        ctx.beginPath(); ctx.moveTo(0,y0+LANE); ctx.lineTo(W,y0+LANE); ctx.stroke(); ctx.setLineDash([]);
+      }
+    }
+    ctx.fillStyle=C.kerb; ctx.fillRect(0,H-BOT,W,BOT);
+    ctx.strokeStyle='rgba(42,35,32,.15)'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(0,H-BOT); ctx.lineTo(W,H-BOT); ctx.stroke();
+    drawTruck();
+    for(var j=0;j<lanes.length;j++){
+      var LL=lanes[j]; if(LL.safe) continue;
+      for(var k=0;k<LL.items.length;k++) drawItem(LL.items[k],laneY(j));
+    }
+    drawPlayer();
+    for(var pi=0;pi<pops.length;pi++){
+      var pp=pops[pi];
+      ctx.save(); ctx.globalAlpha=Math.min(1,pp.life); ctx.textAlign='center';
+      ctx.font='800 22px Helvetica,Arial,sans-serif';
+      ctx.lineWidth=7; ctx.strokeStyle='#fff'; ctx.strokeText(pp.txt,pp.x,pp.y);
+      ctx.fillStyle=C.green; ctx.fillText(pp.txt,pp.x,pp.y);
+      ctx.restore();
+    }
+    ctx.restore();
+    if(flash>0){ ctx.fillStyle='rgba(225,38,28,'+(flash*.26)+')'; ctx.fillRect(0,0,W,H); }
+  }
+  function start(){
+    score=0;level=1;lives=3;pops=[];
+    buildLanes(); resetPlayer(); hud(); running=true; ov.hide();
+  }
+  function over(){
+    running=false; pushScore(2,score);
+    ov.show({ score:score,
+      title: score>500?'¡Dientino imparable!':score>150?'¡Buen cruce!':'La calle ganó',
+      copy:'Llegaste al nivel <b>'+level+'</b>. Baja al formulario para registrar tu resultado.',
+      btn:'Volver a jugar', hint:'Flechas o swipe', action:start });
+  }
+  var sx=0,sy=0,sactive=false;
+  return {
+    init:function(){
+      ctx=setup(cv); ov=Overlay(3); tile=makeTile(IMG.free,256,null);
+      buildLanes(); resetPlayer(); hud();
+      cv.addEventListener('pointerdown',function(e){ e.preventDefault(); var l=local(cv,e); sx=l.x; sy=l.y; sactive=true; },{passive:false});
+      cv.addEventListener('pointerup',function(e){
+        if(!sactive) return; sactive=false;
+        var l=local(cv,e), dx=l.x-sx, dy=l.y-sy;
+        if(Math.abs(dx)<18&&Math.abs(dy)<18){ move(0,-1); return; }
+        if(Math.abs(dx)>Math.abs(dy)) move(dx>0?1:-1,0); else move(0,dy>0?1:-1);
+      });
+      cv.addEventListener('pointercancel',function(){ sactive=false; });
+      ov.show({ title:'Dientino al camión',
+        copy:'Cruza la calle esquivando el tráfico y la comida chatarra hasta llegar al camión rojo de Colgate.',
+        btn:'Empezar a cruzar', hint:'Flechas del teclado o swipe',
+        action:function(){ initAudio(); if(AC&&AC.state==='suspended') AC.resume(); start(); } });
+    },
+    update:update, draw:draw, key:function(dx,dy){ move(dx,dy); },
+    pause:function(){ if(running){ running=false;
+      ov.show({ title:'En pausa', copy:'Dientino sigue a mitad de la calle. ¿Continuamos?', btn:'Continuar', hint:'', action:function(){ running=true; ov.hide(); } }); } }
+  };
+})();
+
+/* =========================================================
+   SLIDER + LOOP
+   ========================================================= */
+var META=[
+  { t:'Libera a Sarraldo', d:'Sarraldo está atrapado en una armadura de sarro. Cepilla como si fueran tus dientes y quítale el sarro por completo.' },
+  { t:'Defensa antibacterias', d:'Las bacterias van directo al diente. Dispara pasta con un clic y detenlas antes de que lo alcancen.' },
+  { t:'Dientino al camión', d:'Cruza la calle esquivando el tráfico y la comida chatarra hasta llegar al camión rojo de Colgate.' }
+];
+var GAMES=[G1,G2,G3], active=0, track=document.getElementById('track');
+function goTo(i){
+  i=Math.max(0,Math.min(2,i));
+  if(i===active) return;
+  if(GAMES[active].pause) GAMES[active].pause();
+  active=i;
+  track.style.transform='translateX(-'+(i*100)+'%)';
+  document.getElementById('s-count').textContent='Juego '+(i+1)+' de 3';
+  document.getElementById('s-title').textContent=META[i].t;
+  document.getElementById('s-desc').textContent=META[i].d;
+  var dots=document.querySelectorAll('.dot');
+  for(var k=0;k<dots.length;k++) dots[k].className='dot'+(k===i?' on':'');
+}
+document.getElementById('prev').addEventListener('click',function(){ goTo(active-1); });
+document.getElementById('next').addEventListener('click',function(){ goTo(active+1); });
+var dts=document.querySelectorAll('.dot');
+for(var d=0;d<dts.length;d++) dts[d].addEventListener('click',function(){ goTo(parseInt(this.getAttribute('data-i'),10)); });
+window.addEventListener('keydown',function(e){
+  var k=e.key;
+  if(active===2&&(k==='ArrowUp'||k==='ArrowDown'||k==='ArrowLeft'||k==='ArrowRight')){
+    e.preventDefault();
+    if(k==='ArrowUp') G3.key(0,-1);
+    else if(k==='ArrowDown') G3.key(0,1);
+    else if(k==='ArrowLeft') G3.key(-1,0);
+    else G3.key(1,0);
+    return;
+  }
+  if(k==='ArrowLeft') goTo(active-1);
+  if(k==='ArrowRight') goTo(active+1);
+});
+
+var form=document.getElementById('reg-form'), msg=document.getElementById('reg-msg'), submit=document.getElementById('reg-submit');
+form.addEventListener('submit',function(e){
+  e.preventDefault();
+  if(!hasPlayed){ msg.className='form-msg err'; msg.textContent='Juega al menos una partida.'; return; }
+  var n=document.getElementById('reg-name').value.trim();
+  var em=document.getElementById('reg-email').value.trim();
+  if(n.length<2){ msg.className='form-msg err'; msg.textContent='Escribe tu nombre.'; return; }
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)){ msg.className='form-msg err'; msg.textContent='Revisa tu correo.'; return; }
+  if(!document.getElementById('reg-terms').checked){ msg.className='form-msg err'; msg.textContent='Necesitamos tu autorización.'; return; }
+  var tot=bestScores[0]+bestScores[1]+bestScores[2];
+  submit.dataset.done='1'; submit.disabled=true; submit.textContent='Registrado ✓';
+  msg.className='form-msg ok';
+  msg.textContent='Simulado: '+n.split(' ')[0]+' registrado con '+tot+' puntos. No se enviaron datos.';
+});
+
+var last=performance.now();
+function loop(now){
+  var dt=Math.min(.05,(now-last)/1000); last=now;
+  var g=GAMES[active]; g.update(dt); g.draw();
+  requestAnimationFrame(loop);
+}
+loadAll(function(){
+  brushTile=buildBrushTile();
+  G1.init(); G2.init(); G3.init();
+  requestAnimationFrame(loop);
+});
+})();
+</script>
+
+</body></html>
